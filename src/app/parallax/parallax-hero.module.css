@@ -1,0 +1,132 @@
+:root{
+    --bg:#0e1116;
+    --surface:#151a21;
+    --text:#e6ebf2;
+    --muted:#9aa3af;
+    --accent:#cca050;
+  }
+  
+  body { background-color: var(--bg); }
+  
+  .hero{
+    position:relative;
+    min-height:100vh;
+    color:var(--text);
+    background:transparent;
+    overflow:hidden;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  
+  /* ===== Parallax background (repeats, with veil + haze) ===== */
+  .bg{
+    position:fixed;            /* covers viewport independently of hero height */
+    inset:0;
+    z-index:-2;                /* behind mid/fg/content */
+    pointer-events:none;
+    will-change:transform;
+  
+    /* Use your seamless/tall file if you have it */
+    background-image: url("/img/hero/bg-texture.jpg");
+    background-repeat: repeat-y;     /* infinite vertical loop */
+    background-position: 50% 0;      /* center horizontally, start at top */
+    background-size: 100% auto;      /* no horizontal crop; scales width to viewport */
+  }
+  
+  /* Veil (readability) + soft vignette */
+  .bg::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    background:
+      radial-gradient(60% 60% at 50% 30%, transparent 0%, transparent 55%, rgba(0,0,0,0.35) 100%),
+      linear-gradient(rgba(14,17,22,0.42), rgba(14,17,22,0.42));
+    pointer-events:none;
+  }
+  
+  /* Bottom blur + haze to blend into page bg while parallaxing */
+  .bg::before{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:-8vh;   /* extend below to hide edges while moving */
+    height:24vh;
+    z-index:2;
+  
+    /* mirror same background so the blur matches */
+    background-image: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
+    background-size: inherit;
+  
+    filter: blur(18px) saturate(.95);
+    /* fade upward */
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
+    pointer-events:none;
+  }
+  
+  /* ===== Mid overlay (transparent PNG) ===== */
+  .mid{
+    position:absolute;
+    inset:0;
+    z-index:-1;               /* above bg, below content */
+    pointer-events:none;
+    will-change:transform;
+  }
+  .mid :global(img) {
+    object-fit: cover;
+    filter: brightness(1.1) contrast(1.2); /* brighter and more contrast */
+    mix-blend-mode: screen;                 /* lighter blend than soft-light */
+    opacity: 0.55;                           /* higher opacity for visibility */
+  }
+  
+  
+  /* ===== Optional foreground product image ===== */
+  .fg{
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    pointer-events:none;
+  }
+  .fgImg{
+    max-width:min(86vw,860px);
+    height:auto;
+    filter:drop-shadow(0 8px 24px rgba(0,0,0,.35));
+  }
+  
+  /* ===== Copy block ===== */
+  .copy{
+    position:relative;
+    z-index:5;
+    max-width:1200px;
+    margin:0 auto;
+    padding:20vh 1.25rem 18vh;
+    text-align:center;
+  }
+  .title{
+    font-size:clamp(2.4rem,4.6vw,5.2rem);
+    line-height:1.03;
+    letter-spacing:.02em;
+    margin:0 0 .65rem 0;
+    text-rendering:optimizeLegibility;
+  }
+  .accent{ color:var(--accent); }
+  .sub{
+    color:var(--muted);
+    max-width:68ch;
+    margin:0 auto 1.25rem;
+  }
+  .cta{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:.78rem 1.6rem;
+    border-radius:.9rem;
+    background:var(--accent);
+    color:#111;
+    font-weight:700;
+    text-decoration:none;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  
