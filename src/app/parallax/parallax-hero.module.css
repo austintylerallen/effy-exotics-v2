@@ -14,7 +14,7 @@
     color:var(--text);
     background:transparent;
     overflow:hidden;
-    border-bottom:1px solid rgba(255,255,255,.06);
+    /* border-bottom:1px solid rgba(255,255,255,.06); */
   }
   
   /* ===== Parallax background (repeats, with veil + haze) ===== */
@@ -38,9 +38,9 @@
     position:absolute;
     inset:0;
     z-index:1;
-    background:
+    /* background:
       radial-gradient(60% 60% at 50% 30%, transparent 0%, transparent 55%, rgba(0,0,0,0.35) 100%),
-      linear-gradient(rgba(14,17,22,0.42), rgba(14,17,22,0.42));
+      linear-gradient(rgba(14,17,22,0.42), rgba(14,17,22,0.42)); */
     pointer-events:none;
   }
   
@@ -66,18 +66,25 @@
   }
   
   /* ===== Mid overlay (transparent PNG) ===== */
-  .mid{
-    position:absolute;
-    inset:0;
-    z-index:-1;               /* above bg, below content */
-    pointer-events:none;
-    will-change:transform;
+  .mid {
+    position: absolute;
+    inset: 0;
+    z-index: -1; /* above bg, below content */
+    pointer-events: none;
+    will-change: transform;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-size: cover;
+    -webkit-mask-size: cover;
   }
+  
   .mid :global(img) {
     object-fit: cover;
-    filter: brightness(1.1) contrast(1.2); /* brighter and more contrast */
-    mix-blend-mode: screen;                 /* lighter blend than soft-light */
-    opacity: 0.55;                           /* higher opacity for visibility */
+    filter: brightness(1.1) contrast(1.2);
+    mix-blend-mode: screen;
+    opacity: 0.35; /* more transparent */
   }
   
   
@@ -95,28 +102,41 @@
     filter:drop-shadow(0 8px 24px rgba(0,0,0,.35));
   }
   
-  /* ===== Copy block ===== */
-  .copy{
-    position:relative;
-    z-index:5;
-    max-width:1200px;
-    margin:0 auto;
-    padding:20vh 1.25rem 18vh;
-    text-align:center;
+/* ===== Copy block (centered) ===== */
+.copy{
+    position: absolute;       /* sit over the hero */
+    inset: 50% auto auto 50%; /* top/left at the middle of the hero */
+    transform: translate(-50%, -50%); /* perfectly center */
+    z-index: 5;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 1.25rem;       /* small side padding for mobile */
+    text-align: center;
   }
+  
   .title{
-    font-size:clamp(2.4rem,4.6vw,5.2rem);
-    line-height:1.03;
-    letter-spacing:.02em;
-    margin:0 0 .65rem 0;
-    text-rendering:optimizeLegibility;
+    font-size: clamp(2.4rem, 4.6vw, 5.2rem);
+    line-height: 1.03;
+    letter-spacing: .02em;
+    margin: 0 0 .65rem 0;
+    text-rendering: optimizeLegibility;
   }
-  .accent{ color:var(--accent); }
+  
+  .accent{ color: var(--accent); }
+  
   .sub{
-    color:var(--muted);
-    max-width:68ch;
-    margin:0 auto 1.25rem;
+    color: var(--muted);
+    max-width: 68ch;
+    margin: 0 auto 1.25rem;
   }
+  
+  /* Optional: nudge down a bit on very short viewports so it doesn't feel cramped */
+  @media (max-height: 680px){
+    .copy{
+      transform: translate(-50%, -45%);
+    }
+  }
+  
   .cta{
     display:inline-flex;
     align-items:center;
@@ -128,5 +148,21 @@
     font-weight:700;
     text-decoration:none;
     box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  
+
+  /* Keep your existing .hero, .bg, .mid, .copy, .title, .accent, .sub, .cta */
+
+/* Ensures no layout jump when the city animates in/out */
+.citySlot{
+    display:inline-block;
+    width:12ch;            /* wide enough for "ALAMOGORDO" */
+    vertical-align:baseline;
+    white-space:nowrap;
+  }
+  
+  /* Optional: separate style for the brand text if you want */
+  .brand{
+    letter-spacing:0.06em;
   }
   

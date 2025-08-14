@@ -3,12 +3,12 @@
 .header{
   position:fixed; inset:0 0 auto 0; z-index:50;
   transition: background .25s ease, border-color .25s ease;
-  background: rgba(14,17,22,0);         /* transparent on top */
+  background: rgba(14,17,22,0);
   border-bottom:1px solid rgba(255,255,255,0);
   backdrop-filter: blur(8px) saturate(1.05);
 }
 .solid{
-  background: rgba(14,17,22,0.72);      /* becomes solid on scroll */
+  background: rgba(14,17,22,0.72);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 
@@ -21,5 +21,18 @@
 .dot{ width:12px; height:12px; border-radius:999px; background:var(--accent); box-shadow:0 0 0 4px rgba(204,160,80,.12); }
 
 .nav{ display:flex; gap:1rem; }
-.nav a{ color:var(--text); text-decoration:none; opacity:.85; }
+
+/* Regular nav links */
+.nav a{
+  color:var(--text);
+  text-decoration:none;
+  opacity:.85;
+}
 .nav a:hover{ opacity:1; }
+
+/* Shop CTA (hashed class via CSS Module) */
+.cta{
+  color:#000 !important;            /* force black text */
+  opacity:1;             /* no faded look on CTA */
+  text-decoration:none;
+}

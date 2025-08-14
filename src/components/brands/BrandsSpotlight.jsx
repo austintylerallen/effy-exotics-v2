@@ -1,16 +1,9 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import styles from "./brands-spotlight.module.css";
 
-/**
- * Drop transparent PNG/SVG logos in /public/brands
- * - /public/brands/backpack-boyz.png
- * - /public/brands/cookies.png
- * - /public/brands/effy-exotics.png
- * - /public/brands/pmc-growers.png
- */
 const BRANDS = [
   {
     key: "backpack-boyz",
@@ -18,7 +11,7 @@ const BRANDS = [
     logo: "/img/brands/backpack-boyz.png",
     blurb:
       "Loud, terpene-rich flower with cult drops. Bold profiles and small-batch heat—curated for flavor.",
-    cta: { label: "Shop Backpack Boyz", href: "/shop?brand=backpack-boyz" },
+    cta: { label: "Shop Backpack Boyz", href: "https://effyexotics.com/las-cruces/shop?dtche%5Bpath%5D=brands%2Fbackbackboyz" },
   },
   {
     key: "cookies",
@@ -26,7 +19,7 @@ const BRANDS = [
     logo: "/img/brands/cookies.png",
     blurb:
       "Iconic genetics and consistent quality. Classics and collabs built for taste and effect.",
-    cta: { label: "Shop Cookies", href: "/shop?brand=cookies" },
+    cta: { label: "Shop Cookies", href: "https://effyexotics.com/las-cruces/shop?dtche%5Bpath%5D=brands%2Fcookies" },
   },
   {
     key: "effy-exotics",
@@ -34,7 +27,7 @@ const BRANDS = [
     logo: "/img/brands/effy-exotics.svg",
     blurb:
       "Our signature line: clean, tested, and flavor-forward. Premium flower and carts with balance and punch.",
-    cta: { label: "Shop Effy Exotics", href: "/shop?brand=effy-exotics" },
+    cta: { label: "Shop Effy Exotics", href: "https://effyexotics.com/las-cruces/shop?dtche%5Bpath%5D=brands%2Feffy-exotics-llc" },
   },
   {
     key: "pmc-growers",
@@ -42,7 +35,7 @@ const BRANDS = [
     logo: "/img/brands/pmc-growers.png",
     blurb:
       "Boutique cultivation with meticulous QA. Fresh batches, clear COAs, and terp-driven experiences.",
-    cta: { label: "Shop PMC Growers", href: "/shop?brand=pmc-growers" },
+    cta: { label: "Shop PMC Growers", href: "https://effyexotics.com/las-cruces/shop?dtche%5Bpath%5D=brands%2Fpmc-growers" },
   },
 ];
 
@@ -58,21 +51,23 @@ export default function BrandsSpotlight() {
   const intervalRef = useRef(null);
   const active = BRANDS[index];
 
-  const next = useCallback(() => {
-    setIndex((i) => (i + 1) % BRANDS.length);
-  }, []);
-  const prev = useCallback(() => {
-    setIndex((i) => (i - 1 + BRANDS.length) % BRANDS.length);
-  }, []);
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
 
-  // Auto-advance every 5s (pause on hover/focus)
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
+
+  const next = useCallback(() => setIndex((i) => (i + 1) % BRANDS.length), []);
+  const prev = useCallback(() => setIndex((i) => (i - 1 + BRANDS.length) % BRANDS.length), []);
+
   useEffect(() => {
     if (paused) return;
     intervalRef.current = setInterval(next, 5000);
     return () => clearInterval(intervalRef.current);
   }, [next, paused]);
 
-  // Keyboard support
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "ArrowRight") next();
@@ -98,13 +93,13 @@ export default function BrandsSpotlight() {
 
   return (
     <section
+      ref={sectionRef}
       className={styles.wrap}
       aria-label="Brand Spotlight"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       <div className={styles.inner}>
-        {/* Left: text */}
         <div className={styles.left}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -131,12 +126,12 @@ export default function BrandsSpotlight() {
           </AnimatePresence>
         </div>
 
-        {/* Right: logo */}
         <div className={styles.right}>
           <AnimatePresence mode="wait">
             <motion.div
               key={`logo-${active.key}`}
               className={styles.logoWrap}
+              style={{ y: parallaxY }}
               initial={{ opacity: 0, scale: 0.985 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.985 }}
