@@ -1,8 +1,18 @@
+/* src/app/globals.css */
 @import "tailwindcss";
 
+/* ------------------ Theme Vars ------------------ */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Effy site-wide backdrop */
+  --effy-bg: #0b0e14;                             /* base page bg (dark) */
+  --effy-tex-url: url("/img/hero/bg-texture4.jpg"); /* same file as hero */
+  --effy-tex-size: 1000px auto;                   /* slightly tighter pattern for visibility */
+  --effy-tex-opacity: 0.1;                       /* ↑ was ~0.18 — brighter texture */
+  --effy-vignette-alpha: 0.10;                    /* ↓ was 0.45 — lighter center vignette */
+  --effy-veil-alpha: 0.16;                        /* ↓ was 0.35 — lighter overall veil */
 }
 
 @theme inline {
@@ -12,15 +22,76 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark scheme stays primary; keep texture vivid there */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --effy-tex-opacity: 0.36;
+    --effy-vignette-alpha: 0.26;
+    --effy-veil-alpha: 0.14;
   }
 }
 
+/* If someone forces light mode, be a bit softer but still visible */
+@media (prefers-color-scheme: light) {
+  :root {
+    --effy-tex-opacity: 0.20;
+    --effy-vignette-alpha: 0.18;
+    --effy-veil-alpha: 0.10;
+  }
+}
+
+/* ------------------ Base Elements ------------------ */
+html, body {
+  min-height: 100%;
+}
+
 body {
+  /* keep your theme vars (components may rely on these) */
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+
+  /* ensure a dark base under the texture for consistency */
+  background-color: var(--effy-bg);
 }
+
+/* ------------------ Global Textured Backdrop ------------------ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;                 /* behind everything */
+  pointer-events: none;
+  background:
+    var(--effy-tex-url) center top / var(--effy-tex-size) repeat;
+  opacity: var(--effy-tex-opacity);
+  /* add a touch of punch so pattern reads */
+  filter: brightness(1.06) contrast(1.08);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;                 /* above texture, still behind content */
+  pointer-events: none;
+  background:
+    /* lighter vignette so middle isn’t too dark */
+    radial-gradient(60% 60% at 50% 30%,
+      rgba(0,0,0, var(--effy-vignette-alpha)) 0%,
+      rgba(0,0,0, 0) 55%
+    ),
+    /* lighter overall veil */
+    linear-gradient(180deg,
+      rgba(14,17,22, var(--effy-veil-alpha)),
+      rgba(14,17,22, var(--effy-veil-alpha))
+    );
+}
+
+/* ------------------ Optional: quick “boost” mode for dev ------------------
+   Add `class="bg-boost"` to <body> temporarily if you want to see it pop even more. */
+.bg-boost::before { opacity: calc(var(--effy-tex-opacity) + 0.12); }
+.bg-boost::after  { --effy-vignette-alpha: 0.20; --effy-veil-alpha: 0.10; }

@@ -27,7 +27,7 @@ export default function AboutUsSection() {
               fontSize: "clamp(28px, 4.2vw, 56px)",
             }}
           >
-            About Effy
+            About Effy Exotics
           </motion.h2>
 
           <motion.span
@@ -41,7 +41,7 @@ export default function AboutUsSection() {
           />
         </div>
 
-        {/* Lead paragraph */}
+        {/* Lead paragraph (matches the old site's intent/tone) */}
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -49,47 +49,63 @@ export default function AboutUsSection() {
           transition={{ duration: 0.5, delay: 0.05 }}
           className="mt-4 max-w-3xl text-lg leading-relaxed text-white/90"
         >
-          We’re a New Mexico–grown brand focused on clean, terpene-forward cannabis. From premium
-          flower to carts and concentrates, we keep things transparent—fresh batches, clear COAs,
-          and straightforward effects so you know exactly what you’re getting.
+          Welcome to Effy Exotics—Las Cruces’ destination for top-quality cannabis. Whether you’re
+          a seasoned connoisseur or just canna-curious, our goal is simple: pair you with the right
+          product for how you want to feel. Expect a friendly, modern space, a curated menu, and a
+          team that takes the time to guide you.
         </motion.p>
 
-        {/* Feature chips */}
+        {/* Supporting paragraph (quality, testing, local growers, community) */}
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.5, delay: 0.08 }}
+          className="mt-3 max-w-3xl text-base leading-relaxed text-white/80"
+        >
+          We’re built on passion, knowledge, and respect for the plant. Our menu leans into exotic
+          genetics and crowd favorites alike, all sourced from trusted New Mexico partners. Every
+          batch is tested for purity and potency, and our budtenders share straight-up, practical
+          info so you can shop with confidence. More than a dispensary, Effy is a welcoming hub for
+          the local community—education, good vibes, and consistently great cannabis.
+        </motion.p>
+
+        {/* Feature chips (reframed to match the old “About” themes) */}
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <FeatureChip
             icon={<LeafIcon />}
-            title="Terpene-Forward"
-            body="Genetics chosen for flavor and consistency."
+            title="Exotic & Classic Strains"
+            body="A curated mix—from legendary cuts to new genetics."
             delay={0}
           />
           <FeatureChip
             icon={<ShieldIcon />}
-            title="Tested & Transparent"
-            body="Third-party COAs for every batch."
+            title="Quality You Can Trust"
+            body="Strict sourcing + third-party testing for purity & potency."
             delay={0.05}
           />
           <FeatureChip
             icon={<HeartIcon />}
-            title="Loved by Locals"
-            body="Community-driven drops and fair pricing."
+            title="Guidance, Not Gatekeeping"
+            body="Knowledgeable budtenders, clear explanations, zero pressure."
             delay={0.1}
           />
         </div>
 
-        {/* Two cards: Our Story + Lab & Cultivation */}
+        {/* Two cards: Visit & Menu — aligned with old site sections (Directions/Menu) */}
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <CardLink
-            href="/about"
-            kicker="Our Story"
-            title="From Las Cruces, with love"
-            body="A small team obsessed with quality and community. Meet the people behind Effy."
+            href="/#visit"
+            kicker="Visit Effy"
+            title="Find us in Las Cruces"
+            body="Swing by our modern shop—friendly faces, helpful guidance, and a relaxed vibe."
             delay={0}
           />
           <CardLink
-            href="/lab"
-            kicker="Lab & Cultivation"
-            title="How we keep it clean"
-            body="Our process, testing, and controls—plus COAs and behind-the-scenes looks."
+            href="www.effyexotics.com/las-cruces/shop"
+            kicker="Shop the Menu"
+            title="Flower, edibles, carts & more"
+            body="Browse our latest drops and trusted staples. Order online for fast pickup."
             delay={0.05}
           />
         </div>

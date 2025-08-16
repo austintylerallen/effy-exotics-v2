@@ -1,34 +1,36 @@
 // src/components/location/LocationSelect.jsx
 "use client";
-import { useState } from "react";
-import { LOCATIONS } from "@/core/locations";
+
+import { useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useLocation } from "@/core/LocationProvider";
+import { LOCATIONS, LOCATION_SLUGS } from "@/core/locations";
 
-export default function LocationSelect({ className = "", size = "sm" }) {
-  const { location, setLocation } = useLocation();
+export default function LocationSelect({ className = "" }) {
+  const { slug: activeSlug, setLocationSlug } = useLocation(); // ✅ correct setter
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
 
-  const sizes = {
-    sm: {
-      trigger: "h-8 px-2 text-xs rounded-lg",
-      dot: "h-2 w-2",
-      caret: "w-3.5 h-3.5",
-      menu: "mt-2 min-w-[160px] px-1 py-1 text-xs",
-      item: "px-3 py-1.5",
-      check: "w-4.5 h-4.5",
-    },
-    md: {
-      trigger: "h-10 px-3 text-sm rounded-xl",
-      dot: "h-2.5 w-2.5",
-      caret: "w-4 h-4",
-      menu: "mt-2 min-w-[180px] px-1.5 py-1.5 text-sm",
-      item: "px-3 py-2",
-      check: "w-5 h-5",
-    },
-  }[size];
+  const activeLabel = useMemo(
+    () => LOCATIONS[activeSlug]?.cityLabel ?? "Choose",
+    [activeSlug]
+  );
 
-  const onChoose = (slug) => {
-    setLocation(slug);
+  const handleChoose = (nextSlug) => {
+    // Persist selection (context + localStorage/cookie via provider)
+    setLocationSlug(nextSlug);
+
+    // Compute destination:
+    // If current path starts with a city slug, swap it; otherwise go to /<nextSlug>.
+    const parts = (pathname || "/").split("/").filter(Boolean);
+    if (parts.length > 0 && LOCATION_SLUGS.includes(parts[0])) {
+      parts[0] = nextSlug;
+      router.push("/" + parts.join("/"));
+    } else {
+      router.push("/" + nextSlug);
+    }
+
     setOpen(false);
   };
 
@@ -36,39 +38,39 @@ export default function LocationSelect({ className = "", size = "sm" }) {
     <div className={`relative ${className}`}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-haspopup="menu"
+        aria-haspopup="listbox"
         aria-expanded={open}
-        className={`inline-flex items-center gap-2 border border-white/20 bg-white/5 hover:bg-white/10 transition ${sizes.trigger}`}
+        onClick={() => setOpen((v) => !v)}
+        className="rounded-xl bg-white/10 text-white px-3 py-2 text-sm hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/30"
       >
-        <span className={`inline-block rounded-full bg-[#FFD36E] ${sizes.dot}`} />
-        {location?.name || "Choose Location"}
-        <svg className={sizes.caret} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" />
-        </svg>
+        {activeLabel}
+        <span className="ml-1 opacity-70">▾</span>
       </button>
 
       {open && (
-        <div
-          role="menu"
-          className={`absolute right-0 z-50 rounded-xl border border-white/15 bg-[#0b0e14]/95 backdrop-blur shadow-lg ${sizes.menu}`}
+        <ul
+          role="listbox"
+          className="absolute right-0 mt-2 w-44 rounded-xl border border-white/10 bg-[#0b0e14]/90 backdrop-blur-md text-sm shadow-lg z-50"
         >
-          {Object.values(LOCATIONS).map((loc) => (
-            <button
-              key={loc.slug}
-              type="button"
-              onClick={() => onChoose(loc.slug)}
-              className={`flex w-full items-center justify-between rounded-lg hover:bg-white/10 ${sizes.item}`}
-            >
-              <span>{loc.name}</span>
-              {location?.slug === loc.slug && (
-                <svg className={sizes.check} viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M20 6L9 17l-5-5" fill="none" stroke="#FFD36E" strokeWidth="2" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
+          {LOCATION_SLUGS.map((s) => {
+            const loc = LOCATIONS[s];
+            const selected = s === activeSlug;
+            return (
+              <li key={s}>
+                <button
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => handleChoose(s)}
+                  className={`w-full text-left px-3 py-2 hover:bg-white/10 ${
+                    selected ? "text-white" : "text-white/80"
+                  }`}
+                >
+                  {loc.cityLabel}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );

@@ -14,64 +14,51 @@
     color:var(--text);
     background:transparent;
     overflow:hidden;
-    /* border-bottom:1px solid rgba(255,255,255,.06); */
   }
   
   /* ===== Parallax background (repeats, with veil + haze) ===== */
   .bg{
-    position:fixed;            /* covers viewport independently of hero height */
+    position:fixed;
     inset:0;
-    z-index:-2;                /* behind mid/fg/content */
+    z-index:-2;
     pointer-events:none;
     will-change:transform;
   
-    /* Use your seamless/tall file if you have it */
     background-image: url("/img/hero/bg-texture.jpg");
-    background-repeat: repeat-y;     /* infinite vertical loop */
-    background-position: 50% 0;      /* center horizontally, start at top */
-    background-size: 100% auto;      /* no horizontal crop; scales width to viewport */
+    background-repeat: repeat-y;
+    background-position: 50% 0;
+    background-size: 100% auto;
   }
   
-  /* Veil (readability) + soft vignette */
-  .bg::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    z-index:1;
-    /* background:
-      radial-gradient(60% 60% at 50% 30%, transparent 0%, transparent 55%, rgba(0,0,0,0.35) 100%),
-      linear-gradient(rgba(14,17,22,0.42), rgba(14,17,22,0.42)); */
-    pointer-events:none;
-  }
+  /* Optional veil/haze if you want it back
+  .bg::after{ ... } */
   
   /* Bottom blur + haze to blend into page bg while parallaxing */
   .bg::before{
     content:"";
     position:absolute;
-    left:0; right:0; bottom:-8vh;   /* extend below to hide edges while moving */
+    left:0; right:0; bottom:-8vh;
     height:24vh;
     z-index:2;
   
-    /* mirror same background so the blur matches */
     background-image: inherit;
     background-repeat: inherit;
     background-position: inherit;
     background-size: inherit;
   
     filter: blur(18px) saturate(.95);
-    /* fade upward */
     -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
             mask-image: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%);
     pointer-events:none;
   }
   
-  /* ===== Mid overlay (transparent PNG) ===== */
+  /* ===== Mid overlay (bg-texture2) — fades out on scroll via inline opacity ===== */
   .mid {
     position: absolute;
     inset: 0;
     z-index: -1; /* above bg, below content */
     pointer-events: none;
-    will-change: transform;
+    will-change: transform, opacity;
     mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
     -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
     mask-repeat: no-repeat;
@@ -80,13 +67,14 @@
     -webkit-mask-size: cover;
   }
   
+  /* Base look for the mid image; container opacity will multiply this,
+     so starting visual opacity ≈ 0.35 and then it fades to 0 as you scroll */
   .mid :global(img) {
     object-fit: cover;
-    filter: brightness(1.1) contrast(1.2);
+    filter: brightness(1.2) contrast(1.2);
     mix-blend-mode: screen;
-    opacity: 0.35; /* more transparent */
+    opacity: 0.50;
   }
-  
   
   /* ===== Optional foreground product image ===== */
   .fg{
@@ -102,15 +90,15 @@
     filter:drop-shadow(0 8px 24px rgba(0,0,0,.35));
   }
   
-/* ===== Copy block (centered) ===== */
-.copy{
-    position: absolute;       /* sit over the hero */
-    inset: 50% auto auto 50%; /* top/left at the middle of the hero */
-    transform: translate(-50%, -50%); /* perfectly center */
+  /* ===== Copy block (centered) ===== */
+  .copy{
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
     z-index: 5;
     width: 100%;
     max-width: 1200px;
-    padding: 0 1.25rem;       /* small side padding for mobile */
+    padding: 0 1.25rem;
     text-align: center;
   }
   
@@ -130,11 +118,8 @@
     margin: 0 auto 1.25rem;
   }
   
-  /* Optional: nudge down a bit on very short viewports so it doesn't feel cramped */
   @media (max-height: 680px){
-    .copy{
-      transform: translate(-50%, -45%);
-    }
+    .copy{ transform: translate(-50%, -45%); }
   }
   
   .cta{
@@ -150,11 +135,8 @@
     box-shadow:0 8px 24px rgba(0,0,0,.25);
   }
   
-
-  /* Keep your existing .hero, .bg, .mid, .copy, .title, .accent, .sub, .cta */
-
-/* Ensures no layout jump when the city animates in/out */
-.citySlot{
+  /* Ensures no layout jump when the city animates in/out */
+  .citySlot{
     display:inline-block;
     width:12ch;            /* wide enough for "ALAMOGORDO" */
     vertical-align:baseline;

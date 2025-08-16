@@ -1,46 +1,71 @@
 // src/core/LocationProvider.jsx
 "use client";
+
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { DEFAULT_LOCATION, LOCATIONS, LOCATION_COOKIE, LOCATION_SLUGS } from "./locations";
+import {
+  DEFAULT_LOCATION,
+  DEFAULT_LOCATION_SLUG,
+  LOCATIONS,
+  LOCATION_COOKIE,
+  LOCATION_SLUGS,
+} from "./locations";
+
+// Small cookie utilities (client-side)
+function readCookie(name) {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp("(^|; )" + name + "=([^;]*)"));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+function writeCookie(name, value, days = 365) {
+  if (typeof document === "undefined") return;
+  const d = new Date();
+  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; expires=${d.toUTCString()}; SameSite=Lax`;
+}
 
 const Ctx = createContext({
+  slug: DEFAULT_LOCATION_SLUG,
   location: DEFAULT_LOCATION,
-  setLocation: () => {},
-  hasChoice: false,
+  setLocationSlug: () => {},
 });
 
-export function LocationProvider({ children }) {
-  const [loc, setLoc] = useState(DEFAULT_LOCATION);
-  const [hasChoice, setHasChoice] = useState(false);
+export function LocationProvider({ children, initialSlug }) {
+  // Resolve initial slug from prop, cookie, localStorage, or default
+  const safeSlug = (s) => (LOCATION_SLUGS.includes(s) ? s : DEFAULT_LOCATION_SLUG);
 
-  // On mount, initialize from cookie if present
+  const [slug, setSlug] = useState(() => {
+    if (initialSlug) return safeSlug(initialSlug);
+    if (typeof window !== "undefined") {
+      const fromStorage = window.localStorage?.getItem(LOCATION_COOKIE);
+      if (fromStorage) return safeSlug(fromStorage);
+      const fromCookie = readCookie(LOCATION_COOKIE);
+      if (fromCookie) return safeSlug(fromCookie);
+    }
+    return DEFAULT_LOCATION_SLUG;
+  });
+
+  // Persist on change
   useEffect(() => {
-    const cookie = typeof document !== "undefined"
-      ? document.cookie.split("; ").find((c) => c.startsWith(`${LOCATION_COOKIE}=`))
-      : null;
-    const slugFromCookie = cookie ? decodeURIComponent(cookie.split("=").pop() || "") : "";
+    if (typeof window === "undefined") return;
+    window.localStorage?.setItem(LOCATION_COOKIE, slug);
+    writeCookie(LOCATION_COOKIE, slug);
+  }, [slug]);
 
-    const slug = LOCATION_SLUGS.includes(slugFromCookie)
-      ? slugFromCookie
-      : DEFAULT_LOCATION.slug;
-
-    setLoc(LOCATIONS[slug]);
-    setHasChoice(LOCATION_SLUGS.includes(slugFromCookie));
-  }, []);
-
-  const setLocation = (slug) => {
-    const next = LOCATIONS[slug] || DEFAULT_LOCATION;
-    setLoc(next);
-    setHasChoice(true);
-    // persist for 1 year
-    document.cookie = `${LOCATION_COOKIE}=${encodeURIComponent(next.slug)}; path=/; max-age=${60*60*24*365}`;
-  };
-
-  const value = useMemo(() => ({ location: loc, setLocation, hasChoice }), [loc, hasChoice]);
+  const value = useMemo(() => {
+    const location = LOCATIONS[slug] || DEFAULT_LOCATION;
+    return {
+      slug,
+      location,
+      setLocationSlug: setSlug,
+    };
+  }, [slug]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
+// Hook for consumers
 export function useLocation() {
-  return useContext(Ctx);
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error("useLocation must be used within <LocationProvider>");
+  return ctx;
 }

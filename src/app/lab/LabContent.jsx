@@ -1,27 +1,79 @@
 "use client";
 import { motion } from "framer-motion";
+import { Outfit } from "next/font/google";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["100", "200", "400", "700"],
+  display: "swap",
+});
+
+/* Reusable skinny, underlined title */
+function SectionTitle({
+  as = "h2",
+  children,
+  size = "lg", // "xl" | "lg" | "md"
+  className = "",
+  underline = true,
+}) {
+  const M = motion[as]; // motion.h1/h2/h3
+  const sizes = {
+    xl: "clamp(32px, 5.2vw, 64px)",
+    lg: "clamp(24px, 3.8vw, 40px)",
+    md: "clamp(20px, 3vw, 30px)",
+  };
+
+  return (
+    <div className="relative inline-block">
+      <M
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        className={`${outfit.className} ${className}`}
+        style={{
+          fontWeight: 100,
+          letterSpacing: "0.06em",
+          lineHeight: 1.05,
+          fontSize: sizes[size],
+        }}
+      >
+        {children}
+      </M>
+
+      {underline && (
+        <motion.span
+          aria-hidden="true"
+          initial={{ scaleX: 0, opacity: 0 }}
+          whileInView={{ scaleX: 1, opacity: 1 }}
+          viewport={{ once: true, amount: 0.7 }}
+          transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full"
+          style={{ backgroundColor: "#FFD36E", transformOrigin: "0% 50%" }}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function LabContent() {
   return (
     <main className="min-h-screen pb-16">
-      {/* Hero */}
-      <section className="relative overflow-hidden py-14 md:py-20">
+      {/* Hero — padding so fixed header never clips */}
+      <section className="relative overflow-visible pt-28 pb-14 md:pt-32 md:pb-20">
         <div className="container mx-auto px-6">
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="text-4xl md:text-6xl font-extrabold tracking-tight"
-          >
-            Lab & Cultivation
-          </motion.h1>
+          <SectionTitle as="h1" size="xl">
+            Lab &amp; Cultivation
+          </SectionTitle>
+
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.05 }}
             className="mt-3 max-w-3xl text-lg text-white/90"
           >
-            A closer look at how we grow, process, and test—so every jar hits the mark.
+            Where clean inputs, tight controls, and transparent testing come together—
+            so every jar with the Effy name hits the mark.
           </motion.p>
         </div>
       </section>
@@ -33,17 +85,17 @@ export default function LabContent() {
             {
               title: "Clean Inputs",
               body:
-                "Genetics chosen for flavor and consistency. Media and nutrients tuned for terp expression.",
+                "Genetics selected for terp expression and consistency. Filtered water, targeted nutrition, and media that let the plant speak—no shortcuts.",
             },
             {
               title: "Tight Controls",
               body:
-                "Environmental controls for temp, humidity, CO₂, and airflow—dialed for each cultivar.",
+                "Data-logged temp, humidity, VPD, CO₂, and airflow. Dialed per cultivar and tuned batch-to-batch for repeatable results.",
             },
             {
               title: "Verified Quality",
               body:
-                "Third-party testing with transparent COAs for potency, terps, and contaminants.",
+                "Every batch goes to a third-party lab. We publish COAs for potency, terpenes, and safety, so you can see exactly what’s inside.",
             },
           ].map((c, i) => (
             <motion.div
@@ -64,15 +116,10 @@ export default function LabContent() {
       {/* Testing & COAs */}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
-          <motion.h2
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl md:text-4xl font-bold tracking-tight"
-          >
-            Testing & COAs
-          </motion.h2>
+          <SectionTitle as="h2" size="lg">
+            Testing &amp; COAs
+          </SectionTitle>
+
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -80,11 +127,26 @@ export default function LabContent() {
             transition={{ duration: 0.45, delay: 0.05 }}
             className="mt-3 max-w-3xl text-white/90"
           >
-            Every batch is tested by third-party labs. We publish COAs with each product so you can
-            verify potency, terpene profile, and cleanliness. {/* Link real files when ready */}
+            We work with state-certified labs on every batch and post results online and in-store.
+            COAs aren’t marketing—they’re your window into what you’re buying.
           </motion.p>
 
-          <div className="mt-4 flex flex-wrap gap-3">
+          <ul className="mt-4 grid gap-2 max-w-3xl text-white/85">
+            <li className="flex gap-2">
+              <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-[#FFD36E]" />
+              <span><strong>Potency:</strong> THC, CBD, and total cannabinoids—no funny math.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-[#FFD36E]" />
+              <span><strong>Terpenes:</strong> Full profile with the top contributors called out for flavor and effect.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-1 inline-block h-1.5 w-1.5 rounded-full bg-[#FFD36E]" />
+              <span><strong>Safety:</strong> Microbials, heavy metals, pesticides, and residual solvents.</span>
+            </li>
+          </ul>
+
+          <div className="mt-5 flex flex-wrap gap-3">
             <a
               href="#"
               className="inline-flex items-center rounded-xl bg-[#FFD36E] px-5 py-2.5 font-semibold text-gray-900 hover:brightness-95 transition"
@@ -101,18 +163,33 @@ export default function LabContent() {
         </div>
       </section>
 
-      {/* Gallery (optional placeholder images) */}
+      {/* Sustainability / Process Story */}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
-          <motion.h3
-            initial={{ opacity: 0, y: 12 }}
+          <SectionTitle as="h2" size="lg">
+            Smarter by Design
+          </SectionTitle>
+
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.5 }}
-            className="text-xl md:text-3xl font-semibold tracking-tight"
+            transition={{ duration: 0.45, delay: 0.05 }}
+            className="mt-3 max-w-3xl text-white/90"
           >
+            We pair proven craft with modern controls—closed-loop environments, responsible water
+            management, and energy-efficient systems. Less waste. More flavor. Better consistency.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Gallery */}
+      <section className="py-8 md:py-12">
+        <div className="container mx-auto px-6">
+          <SectionTitle as="h3" size="md" className="mb-1">
             Inside the Facility
-          </motion.h3>
+          </SectionTitle>
+
           <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
             {[1, 2, 3, 4].map((n, i) => (
               <motion.div
@@ -123,7 +200,6 @@ export default function LabContent() {
                 transition={{ duration: 0.4, delay: i * 0.05 }}
                 className="aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-white/5"
               >
-                {/* Replace with real images: /img/lab/1.jpg etc. */}
                 <div className="w-full h-full grid place-items-center text-white/60">
                   Image {n}
                 </div>
@@ -136,28 +212,31 @@ export default function LabContent() {
       {/* FAQ */}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6 max-w-3xl">
-          <motion.h3
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.5 }}
-            className="text-xl md:text-3xl font-semibold tracking-tight"
-          >
+          <SectionTitle as="h3" size="md">
             FAQ
-          </motion.h3>
+          </SectionTitle>
+
           <div className="mt-4 divide-y divide-white/10 border border-white/10 rounded-2xl overflow-hidden">
             {[
               {
                 q: "Do you publish COAs for every batch?",
-                a: "Yes—scannable in-store and linked online alongside products.",
+                a: "Yes. Each batch is third-party tested; COAs are linked online and scannable in-store via QR.",
               },
               {
-                q: "How do you select genetics?",
-                a: "We test for consistency, terp expression, and desired effects, then scale what resonates.",
+                q: "Why do some strains feel different between lots?",
+                a: "We keep genetics consistent and tune the environment for each cultivar, but natural variation (especially in terpene ratios) can change the experience slightly. COAs list the exact profile for transparency.",
               },
               {
-                q: "Any sustainability practices?",
-                a: "We track water and energy usage and optimize environmental controls to reduce waste.",
+                q: "How long do you cure flower?",
+                a: "Typically 10–14 days plus a controlled burp/condition period. We track moisture activity to protect flavor and smoothness.",
+              },
+              {
+                q: "What sustainability steps do you take?",
+                a: "Responsible water management, energy-efficient climate control, and waste-reduction practices throughout post-harvest.",
+              },
+              {
+                q: "Are all products grown in-house?",
+                a: "Most are. When we collaborate, partners must meet our testing and transparency standards—the same COA rules apply.",
               },
             ].map((item, i) => (
               <details key={i} className="p-5 open:bg-white/5">
